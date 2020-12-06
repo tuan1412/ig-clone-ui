@@ -1,0 +1,8 @@
+.CustomNavbar {
+  border-bottom: 1px solid #dbdbdb;
+  background: #ffffff !important;
+}
+
+.CustomNavbar .navbar {
+  background: #ffffff !important;
+}
