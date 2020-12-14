@@ -5,7 +5,7 @@ const app = express();
 app.use(express.static('build'));
 
 app.get('*', (req, res) => {
-  res.send(path.resolve(__dirname, './build/index.html'));
+  res.send(path.join(__dirname, 'app/build/index.html'));
 })
 
 app.listen(process.env.PORT || 8000);
