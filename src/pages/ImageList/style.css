@@ -1,3 +1,10 @@
 .ImageList {
   background: #fafafa;
 }
+
+.ImageList .card-img,
+.ImageList .card-img-bottom,
+.ImageList .card-img-top {
+  height: 350px;
+  object-fit: cover;
+}

@@ -8,4 +8,4 @@ app.get('*', (req, res) => {
   res.send(__dirname + '/build/index.html');
 })
 
-app.listen(8000);
+app.listen(process.env.PORT || 8000);

@@ -1,0 +1,9 @@
+.UploadImage .upload-container {
+  background-color: #ffffff;
+}
+
+.upload-input .fileContainer {
+  background-color: #fafafa;
+  box-shadow: none;
+  border-radius: 0;
+}

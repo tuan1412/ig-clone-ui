@@ -1,6 +1,102 @@
-function UploadImage () {
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import ImageUploader from 'react-images-upload';
+import Navbar from '../../components/Navbar';
+import api from '../../api/client';
+
+import './style.css';
+
+function UploadImage() {
+  const [pictures, setPictures] = useState([]);
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+  });
+
+  const { title, description } = form;
+
+  const history = useHistory();
+
+  const handleInputForm = (event) => {
+    const { name, value } = event.target;
+    setForm({
+      ...form,
+      [name]: value
+    });
+  };
+
+  const onDrop = picture => {
+    setPictures([...pictures, picture]);
+  };
+
+  const handleUploadFile = async (event) => {
+    event.preventDefault();
+    if (title && description && pictures.length) {
+      const formData = new FormData();
+      console.log(pictures);
+      formData.append('file', pictures[0][0])
+      const resUpload = await api.post('/upload', formData);
+      if (resUpload.success) {
+        const imageUrl = resUpload.data.url;
+        const resSubmitForm = await api.post('/images', { title, url: imageUrl, description});
+        if (resSubmitForm.success) {
+          history.push('/');
+        }
+      }
+    }
+  }
   return (
-    <div>Upload image</div>
+    <div className="UploadImage">
+      <Navbar />
+      <Container>
+        <div className="upload-container mt-4 p-4">
+          <Row>
+            <Col xs="12" md="4">
+              <ImageUploader
+                className="upload-input"
+                withIcon={false}
+                onChange={onDrop}
+                imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                maxFileSize={5242880}
+                singleImage={true}
+                withPreview={true}
+              />
+            </Col>
+            <Col xs="12" md="8">
+              <Form onSubmit={handleUploadFile}>
+                <Form.Group>
+                  <Form.Label>Title</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Title..."
+                    name="title"
+                    value={title}
+                    onChange={handleInputForm}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Description..."
+                      name="description"
+                      value={description}
+                      onChange={handleInputForm}
+                      required
+                    />
+                  </Form.Group>
+                  <Button variant="primary" type="submit">
+                    Upload
+                </Button>
+              </Form>
+            </Col>
+          </Row>
+        </div>
+      </Container>
+    </div>
   )
 }
 

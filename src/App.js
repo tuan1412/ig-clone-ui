@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ImageList from './pages/ImageList';
@@ -13,6 +13,7 @@ import PrivateRoute from './components/Route/PrivateRoute';
 import GuessRoute from './components/Route/GuessRoute';
 
 import UploadImage from './pages/UploadImage';
+import DetailImage from './pages/DetailImage';
 
 export const AuthContext = createContext();
 
@@ -58,6 +59,9 @@ function App() {
           <PrivateRoute path="/upload">
             <UploadImage />
           </PrivateRoute>
+          <Route path="/images/:id">
+            <DetailImage />
+          </Route>
         </Switch>
       </div>
     </AuthContext.Provider>
