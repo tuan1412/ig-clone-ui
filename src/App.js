@@ -22,6 +22,10 @@ function App() {
   const [verifying, setVerifying] = useState(true);
 
   const fetchUserInfo = async () => {
+    const accessToken = localStorage.getItem('token');
+    if (!accessToken) {
+      return setVerifying(false);
+    }
     try {
       const res = await api.get('/auth/verify');
       if (res.success) {

@@ -6,3 +6,8 @@
 .CustomNavbar .navbar {
   background: #ffffff !important;
 }
+
+
+.CustomNavbar .navbar .navbar-brand{
+  cursor: pointer;
+}

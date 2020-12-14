@@ -7,16 +7,20 @@ import { useAuth } from '../../App';
 import api from '../../api/client';
 
 import './style.css';
+import SkeletonDetailImage from '../../components/Skeleton/DetailImage';
 
 const DetailImage = () => {
   const { user } = useAuth();
   const { id } = useParams();
+  const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
 
   const fetchDetailImage = async (id) => {
+    setLoading(true);
     const res = await api.get(`/images/${id}`);
+    setLoading(false);
     if (res.success) {
       firstRenderCmt.current = true;
       setImage(res.data);
@@ -82,7 +86,8 @@ const DetailImage = () => {
       <Container className="pb-4">
         <div className="image-container">
           <Row className="justify-content-center">
-            {image && (
+            {loading && <SkeletonDetailImage />}
+            {(!loading && image) && (
               <Col xs="12" md="8">
                 <div className="detail-card-wrapper">
                   <Row noGutters className="mt-4">

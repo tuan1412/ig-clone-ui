@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form } from 'react-bootstrap';
+import Button from '../../components/Button';
 import ImageUploader from 'react-images-upload';
 import Navbar from '../../components/Navbar';
 import api from '../../api/client';
@@ -9,6 +10,7 @@ import './style.css';
 
 function UploadImage() {
   const [pictures, setPictures] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -35,11 +37,13 @@ function UploadImage() {
     if (title && description && pictures.length) {
       const formData = new FormData();
       console.log(pictures);
-      formData.append('file', pictures[0][0])
+      formData.append('file', pictures[0][0]);
+      setLoading(true);
       const resUpload = await api.post('/upload', formData);
       if (resUpload.success) {
         const imageUrl = resUpload.data.url;
         const resSubmitForm = await api.post('/images', { title, url: imageUrl, description});
+        setLoading(false);
         if (resSubmitForm.success) {
           history.push('/');
         }
@@ -88,7 +92,7 @@ function UploadImage() {
                       required
                     />
                   </Form.Group>
-                  <Button variant="primary" type="submit">
+                  <Button loading={loading} variant="primary" type="submit">
                     Upload
                 </Button>
               </Form>

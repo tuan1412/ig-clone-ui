@@ -25,7 +25,7 @@ function CustomNavbar() {
     <div className="CustomNavbar">
       <Container>
         <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
-          <Navbar.Brand onClick={onGoToHome}>Mindx Images</Navbar.Brand>
+          <Navbar.Brand onClick={onGoToHome}>MindX Images</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">

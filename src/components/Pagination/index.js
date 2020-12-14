@@ -9,7 +9,11 @@ function CustomPagination({ page, total, pageSize = 8, onChangePage }) {
 
     for (let number = 1; number <= maxPage; number++) {
       items.push(
-        <Pagination.Item key={number} active={number === active} onClick={() => onChangePage(number)}>
+        <Pagination.Item key={number} active={number === active} onClick={() => {
+          if (page !== number) {
+            onChangePage(number)
+          }
+        }}>
           {number}
         </Pagination.Item>,
       );

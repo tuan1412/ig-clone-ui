@@ -5,9 +5,10 @@ import {
   Row,
   Col,
   Form,
-  Button,
   Alert
 } from 'react-bootstrap';
+import Button from '../../components/Button'
+
 import api from '../../api/client';
 
 import './style.css';
@@ -25,12 +26,16 @@ function SignUp() {
   const history = useHistory();
 
   const { email, password, confirmPassword } = form;
+  const [loading, setLoading] = useState(false);
 
   const handleSumitForm = async (event) => {
     event.preventDefault();
 
     try {
+      setLoading(true);
       const res = await api.post('/auth/register', { username: email, password, confirmPassword });
+      setLoading(false);
+
       if (res && res.success) {
         const { token } = res.data;
         localStorage.setItem('token', token);
@@ -56,7 +61,7 @@ function SignUp() {
       <Row className="vh-100 justify-content-md-center align-items-center">
         <Col xs="12" md="4">
           <Form className="card-wrapper p-4" onSubmit={handleSumitForm}>
-            <h4 className="mb-4">MindX Girls</h4>
+            <h4 className="mb-4">MindX Images</h4>
             <div className="mb-4">
               {error && (
                 <Form.Group>
@@ -92,7 +97,7 @@ function SignUp() {
                 />
               </Form.Group>
             </div>
-            <Button type="submit" block color="primary">Đăng ký</Button>
+            <Button loading={loading} type="submit" block color="primary">Đăng ký</Button>
           </Form>
           <div className="card-wrapper mt-4 p-3">
             <div>Bạn đã có tài khoản? <Link to="/login">Đăng nhập</Link></div>
