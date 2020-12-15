@@ -7,3 +7,15 @@
   box-shadow: none;
   border-radius: 0;
 }
+
+.fileContainer .uploadPictureContainer {
+  width: 100%;
+}
+
+.has-picture .uploadIcon {
+  display: none;
+}
+
+.has-picture .chooseFileButton {
+  display: none;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Container, Row, Col, Form } from 'react-bootstrap';
+import clsx from 'classnames';
 import Button from '../../components/Button';
 import ImageUploader from 'react-images-upload';
 import Navbar from '../../components/Navbar';
@@ -9,7 +10,7 @@ import api from '../../api/client';
 import './style.css';
 
 function UploadImage() {
-  const [pictures, setPictures] = useState([]);
+  const [picture, setPicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: '',
@@ -28,16 +29,15 @@ function UploadImage() {
     });
   };
 
-  const onDrop = picture => {
-    setPictures([...pictures, picture]);
+  const onDrop = pictures => {
+    setPicture(pictures[0]);
   };
 
   const handleUploadFile = async (event) => {
     event.preventDefault();
-    if (title && description && pictures.length) {
+    if (title && description && picture.length) {
       const formData = new FormData();
-      console.log(pictures);
-      formData.append('file', pictures[0][0]);
+      formData.append('file', picture);
       setLoading(true);
       const resUpload = await api.post('/upload', formData);
       if (resUpload.success) {
@@ -50,6 +50,14 @@ function UploadImage() {
       }
     }
   }
+
+  const clsUpload = clsx({
+    'has-picture': picture,
+    'upload-input': true
+  });
+
+  console.log(picture);
+
   return (
     <div className="UploadImage">
       <Navbar />
@@ -58,13 +66,13 @@ function UploadImage() {
           <Row>
             <Col xs="12" md="4">
               <ImageUploader
-                className="upload-input"
-                withIcon={false}
+                className={clsUpload}
                 onChange={onDrop}
                 imgExtension={['.jpg', '.gif', '.png', '.gif']}
                 maxFileSize={5242880}
                 singleImage={true}
                 withPreview={true}
+                withLabel={false}
               />
             </Col>
             <Col xs="12" md="8">
