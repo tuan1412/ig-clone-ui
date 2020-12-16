@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Container, Row, Col, Form } from 'react-bootstrap';
+
 import clsx from 'classnames';
 import Button from '../../components/Button';
 import ImageUploader from 'react-images-upload';
 import Navbar from '../../components/Navbar';
 import api from '../../api/client';
+
+import { storage } from '../firebase';
 
 import './style.css';
 
@@ -33,16 +36,22 @@ function UploadImage() {
     setPicture(pictures[0]);
   };
 
+  const uploadFile = (file) => {
+    return new Promise(resolve => {
+      const storageRef = storage.ref();
+      const thisRef = storageRef.child(file.name);
+
+      thisRef.put(file).snapshot.ref.getDownloadURL().then(url => resolve(url));
+    })
+  }
+
   const handleUploadFile = async (event) => {
     event.preventDefault();
-    if (title && description && picture.length) {
-      const formData = new FormData();
-      formData.append('file', picture);
+    if (title && description && picture) {
       setLoading(true);
-      const resUpload = await api.post('/upload', formData);
-      if (resUpload.success) {
-        const imageUrl = resUpload.data.url;
-        const resSubmitForm = await api.post('/images', { title, url: imageUrl, description});
+      const imageUrl = await uploadFile(picture);
+      if (imageUrl) {
+        const resSubmitForm = await api.post('/images', { title, url: imageUrl, description });
         setLoading(false);
         if (resSubmitForm.success) {
           history.push('/');
@@ -55,8 +64,6 @@ function UploadImage() {
     'has-picture': picture,
     'upload-input': true
   });
-
-  console.log(picture);
 
   return (
     <div className="UploadImage">
@@ -89,19 +96,19 @@ function UploadImage() {
                   />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      placeholder="Description..."
-                      name="description"
-                      value={description}
-                      onChange={handleInputForm}
-                      required
-                    />
-                  </Form.Group>
-                  <Button loading={loading} variant="primary" type="submit">
-                    Upload
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    placeholder="Description..."
+                    name="description"
+                    value={description}
+                    onChange={handleInputForm}
+                    required
+                  />
+                </Form.Group>
+                <Button loading={loading} variant="primary" type="submit">
+                  Upload
                 </Button>
               </Form>
             </Col>
