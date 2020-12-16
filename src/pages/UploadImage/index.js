@@ -37,11 +37,20 @@ function UploadImage() {
   };
 
   const uploadFile = (file) => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const storageRef = storage.ref();
       const thisRef = storageRef.child(file.name);
 
-      thisRef.put(file).snapshot.ref.getDownloadURL().then(url => resolve(url));
+      const task = thisRef.put(file);
+      const taskProgress = () => {};
+      const taskError = reject;
+      const taskCompleted = () => {
+        task.snapshot.ref
+          .getDownloadURL()
+          .then(resolve)
+          .catch(reject);
+      };
+      task.on('state_changed', taskProgress, taskError, taskCompleted);
     })
   }
 
