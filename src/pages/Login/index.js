@@ -134,7 +134,6 @@ function Login() {
                 clientId={process.env.REACT_APP_GG_CLIENT_ID}
                 render={GoogleLoginButton}
                 onSuccess={responseGoogle}
-                onFailure={responseGoogle}
                 cookiePolicy={'single_host_origin'}
               />
             </div>
