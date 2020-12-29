@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -23,6 +23,7 @@ function Login() {
     email: '',
     password: '',
   });
+  const { search } = useLocation();
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -99,7 +100,7 @@ function Login() {
     }
   }
 
-  if (loadingOauth) {
+  if (loadingOauth || search) {
     return <LoadingPage />
   };
 
@@ -140,13 +141,14 @@ function Login() {
                 appId={process.env.REACT_APP_FB_APP_ID}
                 fields="name,email,picture"
                 callback={responseFacebook}
-                redirectUri={'https://mindx-images-ui.herokuapp.com/login'}
+                redirectUri={process.env.REACT_APP_FB_REDIRECT || window.location.href}
                 render={FacebookLoginButton}
               />
               <GoogleLogin
                 clientId={process.env.REACT_APP_GG_CLIENT_ID}
                 render={GoogleLoginButton}
                 onSuccess={responseGoogle}
+                redirectUri={process.env.REACT_APP_GG_REDIRECT || window.location.href}
                 cookiePolicy={'single_host_origin'}
               />
             </div>
