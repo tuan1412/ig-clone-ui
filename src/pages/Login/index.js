@@ -100,7 +100,7 @@ function Login() {
     }
   }
 
-  if (loadingOauth || search) {
+  if (loadingOauth && search) {
     return <LoadingPage />
   };
 
