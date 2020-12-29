@@ -7,7 +7,6 @@ import Button from '../../components/Button';
 import ImageUploader from 'react-images-upload';
 import Navbar from '../../components/Navbar';
 import api from '../../api/client';
-
 import { storage } from '../firebase';
 
 import './style.css';

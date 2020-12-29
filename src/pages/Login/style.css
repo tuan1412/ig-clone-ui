@@ -6,3 +6,7 @@
   background: #ffffff;
   border: 1px solid #dbdbdb;
 }
+
+.Login .social-button button {
+  height: 40px !important;
+} 

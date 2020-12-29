@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, Card, Form } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
-import { useAuth } from '../../App';
+import { useAuth, useSocket } from '../../App';
 
 import api from '../../api/client';
 
@@ -11,11 +11,28 @@ import SkeletonDetailImage from '../../components/Skeleton/DetailImage';
 
 const DetailImage = () => {
   const { user } = useAuth();
+  const socket = useSocket();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
+  const [hasSomeoneTyping, setHasSomeoneTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  const firstRenderCmt = useRef(false);
+  const typing = useRef(false);
+
+  const emitTyping = () => {
+    if (!typing.current) {
+      socket.emit('typing-comment', id);
+      typing.current = true;
+    }
+  }
+
+  const emitStopTyping = () => {
+    typing.current = false;
+    socket.emit('stop-typing-comment', id);
+  }
 
   const fetchDetailImage = async (id) => {
     setLoading(true);
@@ -28,9 +45,6 @@ const DetailImage = () => {
     }
   }
 
-  const messagesEndRef = useRef(null);
-  const firstRenderCmt = useRef(false);
-
   const scrollToBottom = () => {
     if (messagesEndRef.current && !firstRenderCmt.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
@@ -40,13 +54,33 @@ const DetailImage = () => {
   }
 
   useEffect(() => {
+    if (socket && user) {
+      socket.emit('request-comment', id);
+      socket.on('typing', () => setHasSomeoneTyping(true));
+      socket.on('stop-typing', () => setHasSomeoneTyping(false));
+      socket.on('new-comment', (newComment) => setComments((comments) => [...comments, newComment]));
+    }
+    return () => {
+      socket.off('typing-comment');
+      socket.off('stop-typing-comment');
+      socket.off('new-comment');
+    }
+  }, [socket, id, user]);
+
+  useEffect(() => {
     fetchDetailImage(id);
   }, [id]);
 
   useEffect(scrollToBottom, [comments]);
 
   const onChangeComment = (event) => {
-    setComment(event.target.value);
+    const content = event.target.value;
+    if (content) {
+      emitTyping()
+    } else {
+      emitStopTyping();
+    }
+    setComment(content);
   }
 
   const onPushComment = async (event) => {
@@ -61,9 +95,10 @@ const DetailImage = () => {
         const newComment = res.data;
         setComment('');
         setComments([...comments, newComment]);
+        socket.emit('show-comment', id, newComment)
+        socket.emit('stop-typing-comment', id);
       }
     }
-
   }
 
   const renderComments = (comments) => {
@@ -100,6 +135,7 @@ const DetailImage = () => {
                       <div className="comment-wrapper p-3 d-flex flex-column">
                         <div className="comment-content flex-grow-1">
                           {renderComments(comments)}
+                          {hasSomeoneTyping && <div>Someone is typing...</div>}
                           <div ref={messagesEndRef} />
                         </div>
                         {user && (
