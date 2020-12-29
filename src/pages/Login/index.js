@@ -128,7 +128,7 @@ function Login() {
                 appId={process.env.REACT_APP_FB_APP_ID}
                 fields="name,email,picture"
                 callback={responseFacebook}
-                redirectUri={window.location.hostname}
+                redirectUri={window.location.origin}
                 render={FacebookLoginButton}
               />
               <GoogleLogin
@@ -136,7 +136,7 @@ function Login() {
                 render={GoogleLoginButton}
                 onSuccess={responseGoogle}
                 cookiePolicy={'single_host_origin'}
-                redirectUri={window.location.hostname}
+                redirectUri={window.location.origin}
               />
             </div>
           </Form>
