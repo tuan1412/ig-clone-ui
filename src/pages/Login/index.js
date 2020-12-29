@@ -13,6 +13,7 @@ import { useAuth } from '../../App';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import GoogleLogin from 'react-google-login';
 import { FacebookLoginButton, GoogleLoginButton } from "react-social-login-buttons";
+import LoadingPage from '../../components/LoadingPage';
 
 import './style.css';
 
@@ -25,6 +26,7 @@ function Login() {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingOauth, setLoadingOauth] = useState(false);
 
   const history = useHistory();
 
@@ -59,8 +61,10 @@ function Login() {
 
   const responseGoogle = async (response) => {
     try {
+      setLoadingOauth(true);
       const { profileObj: { email }, googleId } = response;
       const res = await api.post('/auth/login/oauth', { oauthId: googleId, username: email });
+      setLoadingOauth(false);
       if (res && res.success) {
         const { token } = res.data;
         localStorage.setItem('token', token);
@@ -70,15 +74,18 @@ function Login() {
       setError('Something went wrong');
     } catch (error) {
       console.log(error);
+      setLoadingOauth(false);
       setError('Something went wrong');
     }
   }
 
   const responseFacebook = async (response) => {
     try {
+      setLoadingOauth(true);
       const { email, id } = response;
       const res = await api.post('/auth/login/oauth', { oauthId: id, username: email });
       if (res && res.success) {
+        setLoadingOauth(false);
         const { token } = res.data;
         localStorage.setItem('token', token);
         setUser(res.data)
@@ -87,9 +94,14 @@ function Login() {
       setError('Something went wrong');
     } catch (error) {
       console.log(error);
+      setLoadingOauth(false);
       setError('Something went wrong');
     }
   }
+
+  if (loadingOauth) {
+    return <LoadingPage />
+  };
 
   return (
     <Container className="Login" fluid>
