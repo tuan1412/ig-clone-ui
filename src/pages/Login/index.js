@@ -141,6 +141,7 @@ function Login() {
                 fields="name,email,picture"
                 callback={responseFacebook}
                 render={FacebookLoginButton}
+                autoLoad={true}
               />
               <GoogleLogin
                 clientId={process.env.REACT_APP_GG_CLIENT_ID}
