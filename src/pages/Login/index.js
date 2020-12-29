@@ -140,6 +140,7 @@ function Login() {
                 appId={process.env.REACT_APP_FB_APP_ID}
                 fields="name,email,picture"
                 callback={responseFacebook}
+                redirectUri={'https://mindx-images-ui.herokuapp.com/login'}
                 render={FacebookLoginButton}
               />
               <GoogleLogin
