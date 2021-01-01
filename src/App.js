@@ -28,6 +28,8 @@ function App() {
   useEffect(() => {
     try {
       socket.current = socketIOClient(process.env.REACT_APP_SERVER_REALTIME_URL);
+      console.log('connect socket success');
+
     } catch (err) {
       console.log('connect socket fail', err);
     }
