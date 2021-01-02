@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -7,57 +7,58 @@ import {
   Form,
   Alert
 } from 'react-bootstrap';
+import GoogleLogin from 'react-google-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
+
 import Button from '../../components/Button'
 import api from '../../api/client';
-import { useAuth } from '../../App';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import GoogleLogin from 'react-google-login';
-import { FacebookLoginButton, GoogleLoginButton } from "react-social-login-buttons";
 import LoadingPage from '../../components/LoadingPage';
+
+import { useAuth } from '../../App';
 
 import './style.css';
 
-function Login() {
-  const { setUser } = useAuth();
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
-  const { search } = useLocation();
+const schema = yup.object().shape({
+  username: yup
+    .string()
+    .email(),
+  password: yup
+    .string()
+    .min(6)
+});
 
+function Login() {
+  const { login } = useAuth();
+  const { register, handleSubmit, errors } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const { search } = useLocation();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingOauth, setLoadingOauth] = useState(false);
 
-  const history = useHistory();
-
-  const { email, password } = form;
-
-  const handleInputForm = (event) => {
-    const { name, value } = event.target;
-    setForm({
-      ...form,
-      [name]: value
-    });
-  };
-
-  const handleSumitForm = async () => {
+  const onSubmit = async (form) => {
+    const { username, password } = form;
     try {
       setLoading(true);
-      const res = await api.post('/auth/login', { username: email, password });
+      const res = await api.post('/auth/login', { username, password });
       setLoading(false);
       if (res && res.success) {
-        const { token } = res.data;
-        localStorage.setItem('token', token);
-        setUser(res.data)
-        return history.push('/');
+        const { token, ...user } = res.data;
+        return login({ user, token })
       }
       setError('Something went wrong');
+      setLoading(false);
     } catch (error) {
-      console.log(error);
       setLoading(false);
       setError('Something went wrong');
     }
+
   }
 
   const responseGoogle = async (response) => {
@@ -67,14 +68,12 @@ function Login() {
       const res = await api.post('/auth/login/oauth', { oauthId: googleId, username: email });
       setLoadingOauth(false);
       if (res && res.success) {
-        const { token } = res.data;
-        localStorage.setItem('token', token);
-        setUser(res.data)
-        return history.push('/');
+        const { token, ...user } = res.data;
+        return login({ user, token })
       }
+      setLoading(false);
       setError('Something went wrong');
     } catch (error) {
-      console.log(error);
       setLoadingOauth(false);
       setError('Something went wrong');
     }
@@ -87,14 +86,12 @@ function Login() {
       const res = await api.post('/auth/login/oauth', { oauthId: id, username: email });
       if (res && res.success) {
         setLoadingOauth(false);
-        const { token } = res.data;
-        localStorage.setItem('token', token);
-        setUser(res.data)
-        return history.push('/');
+        const { token, ...user } = res.data;
+        return login({ user, token })
       }
+      setLoading(false);
       setError('Something went wrong');
     } catch (error) {
-      console.log(error);
       setLoadingOauth(false);
       setError('Something went wrong');
     }
@@ -104,37 +101,56 @@ function Login() {
     return <LoadingPage />
   };
 
+  console.log(errors);
   return (
     <Container className="Login" fluid>
       <Row className="vh-100 justify-content-md-center align-items-center">
         <Col xs="12" md="4">
-          <Form className="card-wrapper p-4" onSubmit={(event) => event.preventDefault()}>
-            <h4 className="mb-4">MindX Images</h4>
-            <div className="mb-4">
-              {error && (
+          <div className="card-wrapper p-4">
+            <Form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <h4 className="mb-4">MindX Images</h4>
+              <div className="mb-4">
+                {error && (
+                  <Form.Group>
+                    <Alert
+                      variant="danger"
+                      onClose={() => setError('')}
+                      dismissible
+                    >
+                      {error}
+                    </Alert>
+                  </Form.Group>
+                )}
                 <Form.Group>
-                  <Alert variant="danger">{error}</Alert>
+                  <Form.Control
+                    ref={register}
+                    name="username"
+                    placeholder="Enter your email..."
+                    isInvalid={errors.username}
+                  />
+                  {errors.username && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.username.message}
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
-              )}
-              <Form.Group>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  placeholder="Enter your email..."
-                  value={email}
-                  onChange={handleInputForm}
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  placeholder="Enter your password..."
-                  value={password}
-                  onChange={handleInputForm} />
-              </Form.Group>
-            </div>
-            <Button onClick={handleSumitForm} loading={loading} type="submit" block variant="primary">Đăng nhập</Button>
+                <Form.Group>
+                  <Form.Control
+                    ref={register}
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password..."
+                    isInvalid={errors.password}
+                  />
+                  {errors.password && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.password.message}
+                    </Form.Control.Feedback>
+                  )}
+                </Form.Group>
+              </div>
+              <Button loading={loading} type="submit" block variant="primary">Đăng nhập</Button>
+            </Form>
             <div className="text-center my-3">Or login with</div>
             <div className="social-button">
               <FacebookLogin
@@ -152,9 +168,9 @@ function Login() {
                 cookiePolicy={'single_host_origin'}
               />
             </div>
-          </Form>
+          </div>
           <div className="card-wrapper mt-4 p-3">
-            <div>Bạn không có tài khoản? <Link to="/signup">Đăng ký</Link></div>
+            <div>No account? <Link to="/signup">Sign up here</Link></div>
           </div>
         </Col>
       </Row>

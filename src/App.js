@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext, useRef } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import socketIOClient from 'socket.io-client';
 
 import Login from './pages/Login';
@@ -24,6 +24,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [verifying, setVerifying] = useState(true);
   const socket = useRef();
+  const history = useHistory();
 
   useEffect(() => {
     try {
@@ -57,12 +58,24 @@ function App() {
     fetchUserInfo();
   }, []);
 
+  const login = ({ user, token }) => {
+    localStorage.setItem('token', token);
+    setUser(user);
+    return history.push('/');
+  }
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    return history.push('/login');
+  }
+
   if (verifying) {
     return <LoadingPage />
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       <SocketContext.Provider value={socket.current}>
         <div className="App">
           <Switch>

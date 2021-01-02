@@ -4,13 +4,11 @@ import { useAuth } from '../../App';
 import './style.css';
 
 function CustomNavbar() {
-  const { user, setUser } = useAuth();
+  const { user, logout } = useAuth();
   const history = useHistory();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    history.push('/login');
+    logout();
   }
 
   const handleUpload = () => {
@@ -28,13 +26,13 @@ function CustomNavbar() {
           <Navbar.Brand onClick={onGoToHome}>MindX Images</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="mr-auto">
+            <Nav className="mr-auto" as="ul">
               {!user && (
                 <>
-                  <Nav.Link>
+                  <Nav.Link as="li">
                     <Link to="/login">Login</Link>
                   </Nav.Link>
-                  <Nav.Link>
+                  <Nav.Link as="li">
                     <Link to="/login">Sign up</Link>
                   </Nav.Link>
                 </>
