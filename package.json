@@ -30,7 +30,6 @@
   },
   "scripts": {
     "dev": "react-scripts start",
-    "prestart": "npm run build",
     "start": "node server",
     "build": "react-scripts build",
     "test": "react-scripts test",
