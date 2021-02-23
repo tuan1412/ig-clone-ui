@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Container,
@@ -7,15 +6,15 @@ import {
   Form,
   Alert
 } from 'react-bootstrap';
-import Button from '../../components/Button'
 import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
 
-import api from '../../api/client';
+import Button from '../../components/Button'
+
+import { useSignup } from '../../hooks/useAuth';
 
 import './style.css';
-import { useAuth } from '../../App';
 
 const schema = yup.object().shape({
   username: yup
@@ -29,30 +28,13 @@ const schema = yup.object().shape({
 });
 
 function SignUp() {
-  const { login } = useAuth();
+  const { mutate, isLoading, error } = useSignup();
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
-  const [error, setError] = useState('');
-
-  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (form) => {
-    const { email, password, confirmPassword } = form;
-
-    try {
-      setLoading(true);
-      const res = await api.post('/auth/register', { username: email, password, confirmPassword });
-      setLoading(false);
-      if (res && res.success) {
-        const { token, ...user } = res.data;
-        login({ user, token });
-      }
-      setError('Something went wrong');
-    } catch (error) {
-      setError('Something went wrong');
-      setLoading(false);
-    }
+    mutate(form)
   }
 
   return (
@@ -66,8 +48,8 @@ function SignUp() {
                 <Form.Group>
                   <Alert
                     variant="danger"
-                    onClose={() => setError('')}
-                    dismissible>
+                    dismissible
+                  >
                     {error}
                   </Alert>
                 </Form.Group>
@@ -114,7 +96,7 @@ function SignUp() {
                 )}
               </Form.Group>
             </div>
-            <Button loading={loading} type="submit" block color="primary">Sign up</Button>
+            <Button loading={isLoading} type="submit" block color="primary">Sign up</Button>
           </Form>
           <div className="card-wrapper mt-4 p-3">
             <div>Had account? <Link to="/login">Login here</Link></div>

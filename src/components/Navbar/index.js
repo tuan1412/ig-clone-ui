@@ -1,10 +1,11 @@
 import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
 import { useHistory, Link } from 'react-router-dom';
-import { useAuth } from '../../App';
+import { useUser, useLogout } from '../../hooks/useAuth';
 import './style.css';
 
 function CustomNavbar() {
-  const { user, logout } = useAuth();
+  const user = useUser();
+  const logout = useLogout();
   const history = useHistory();
 
   const handleLogout = () => {
@@ -33,7 +34,7 @@ function CustomNavbar() {
                     <Link to="/login">Login</Link>
                   </Nav.Link>
                   <Nav.Link as="li">
-                    <Link to="/login">Sign up</Link>
+                    <Link to="/signup">Sign up</Link>
                   </Nav.Link>
                 </>
               )}

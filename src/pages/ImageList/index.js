@@ -17,6 +17,8 @@ function ImageList() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  console.log('render image list')
+
   const fetchImages = async (page) => {
     try {
       const offset = (page - 1) * PAGE_SIZE;

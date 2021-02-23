@@ -1,30 +1,29 @@
-import { useState, useEffect, createContext, useContext, useRef } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { useEffect, createContext, useContext, useRef } from 'react';
+import { Route, Switch } from 'react-router-dom';
 import socketIOClient from 'socket.io-client';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ImageList from './pages/ImageList';
+import UploadImage from './pages/UploadImage';
+import DetailImage from './pages/DetailImage';
 
-import api from './api/client';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
 import LoadingPage from './components/LoadingPage';
 import PrivateRoute from './components/Route/PrivateRoute';
 import GuessRoute from './components/Route/GuessRoute';
 
-import UploadImage from './pages/UploadImage';
-import DetailImage from './pages/DetailImage';
+import { useVerifyAuth } from './hooks/useAuth'
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 
 export const AuthContext = createContext();
 export const SocketContext = createContext();
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [verifying, setVerifying] = useState(true);
+  const { user, verifying } = useVerifyAuth();
+  console.log('render');
   const socket = useRef();
-  const history = useHistory();
 
   useEffect(() => {
     try {
@@ -36,46 +35,12 @@ function App() {
     }
   }, []);
 
-  const fetchUserInfo = async () => {
-    const accessToken = localStorage.getItem('token');
-    if (!accessToken) {
-      return setVerifying(false);
-    }
-    try {
-      const res = await api.get('/auth/verify');
-      if (res.success) {
-        setUser(res.data);
-        setVerifying(false);
-      } else {
-        setVerifying(false);
-      }
-    } catch (err) {
-      setVerifying(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
-  const login = ({ user, token }) => {
-    localStorage.setItem('token', token);
-    setUser(user);
-    return history.push('/');
-  }
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    return history.push('/login');
-  }
-
   if (verifying) {
     return <LoadingPage />
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user }}>
       <SocketContext.Provider value={socket.current}>
         <div className="App">
           <Switch>
