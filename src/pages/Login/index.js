@@ -93,7 +93,7 @@ function Login() {
                   )}
                 </Form.Group>
               </div>
-              <Button loading={isLoading || loadingOauth} type="submit" block variant="primary">Đăng nhập</Button>
+              <Button loading={isLoading} type="submit" block variant="primary">Đăng nhập</Button>
             </Form>
             {/* <div className="text-center my-3">Or login with</div> */}
             {/* <div className="social-button">
