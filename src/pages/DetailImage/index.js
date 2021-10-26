@@ -86,14 +86,18 @@ const DetailImage = () => {
   const onPushComment = async (event) => {
     event.preventDefault();
 
+    setComment('');
+
     if (image && image._id) {
       const res = await api.post('/comments', {
         content: comment,
         imageId: image._id
       })
       if (res.success) {
-        const newComment = res.data;
-        setComment('');
+        const newComment = {
+          ...res.data,
+          createdBy: user
+        }
         setComments([...comments, newComment]);
         socket.emit('show-comment', id, newComment)
         socket.emit('stop-typing-comment', id);
