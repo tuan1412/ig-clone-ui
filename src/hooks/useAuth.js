@@ -5,14 +5,14 @@ import api from '../api/client';
 
 export const useUser = () => {
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData('verify-auth')
+  const user = queryClient.getQueryData('user')
 
   return user;
 }
 
 export const useVerifyAuth = () => {
-  const { isLoading: verifying, data: authInfo } = useQuery(
-    'verify-auth',
+  const { isLoading, data: authInfo, isFetched } = useQuery(
+    'user',
     async () => {
       const accessToken = localStorage.getItem('token');
       if (!accessToken) {
@@ -31,7 +31,7 @@ export const useVerifyAuth = () => {
   );
 
   return {
-    verifying,
+    verifying: !isFetched || isLoading,
     user: authInfo
   };
 };
@@ -53,7 +53,7 @@ export const useLogin = () => {
 
         if (data) {
           localStorage.setItem('token', token);
-          queryClient.setQueryData('verify-auth', user);
+          queryClient.setQueryData('user', user);
           history.push('/');
         }
       }
@@ -80,7 +80,7 @@ export const useLoginOauth = () => {
 
         if (data) {
           localStorage.setItem('token', token);
-          queryClient.setQueryData('verify-auth', user);
+          queryClient.setQueryData('user', user);
           history.push('/');
         }
       }
@@ -96,7 +96,7 @@ export const useLogout = () => {
 
   const logout = useCallback(
     () => {
-      queryClient.setQueryData('verify-auth', null);
+      queryClient.setQueryData('user', null);
       history.push('/');
     },
     [queryClient, history],
@@ -122,7 +122,7 @@ export const useSignup = () => {
 
         if (data) {
           localStorage.setItem('token', token);
-          queryClient.setQueryData('verify-auth', user);
+          queryClient.setQueryData('user', user);
           history.push('/');
         }
       }

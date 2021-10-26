@@ -5,17 +5,17 @@ import {
   Col,
   Form,
 } from 'react-bootstrap';
-import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
+// import GoogleLogin from 'react-google-login';
+// import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+// import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
+import * as yup from 'yup';
 
 import Button from '../../components/Button'
 import LoadingPage from '../../components/LoadingPage';
 
-import { useLogin, useLoginOauth } from '../../hooks/useAuth';
+import { useLogin } from '../../hooks/useAuth';
 
 import './style.css';
 
@@ -33,29 +33,29 @@ function Login() {
     resolver: yupResolver(schema),
   });
 
-  const { search } = useLocation();
+  // const { search } = useLocation();
 
   const { isLoading, mutate } = useLogin();
-  const { isLoading: loadingOauth, mutate:mutateOauth } = useLoginOauth();
+  // const { isLoading: loadingOauth, mutate:mutateOauth } = useLoginOauth();
 
   const onSubmit = async (form) => {
     mutate(form);
   }
 
-  const responseGoogle = async (response) => {
-    const { profileObj: { email }, googleId } = response;
-    mutateOauth({ oauthId: googleId, username: email }) 
-  }
+  // const responseGoogle = async (response) => {
+  //   const { profileObj: { email }, googleId } = response;
+  //   mutateOauth({ oauthId: googleId, username: email }) 
+  // }
 
-  const responseFacebook = async (response) => {
-    const { email, id } = response;
+  // const responseFacebook = async (response) => {
+  //   const { email, id } = response;
 
-    mutateOauth({ oauthId: id, username: email }) 
-  }
+  //   mutateOauth({ oauthId: id, username: email }) 
+  // }
 
-  if (loadingOauth && search) {
-    return <LoadingPage />
-  };
+  // if (loadingOauth && search) {
+  //   return <LoadingPage />
+  // };
 
   return (
     <Container className="Login" fluid>
@@ -95,8 +95,8 @@ function Login() {
               </div>
               <Button loading={isLoading || loadingOauth} type="submit" block variant="primary">Đăng nhập</Button>
             </Form>
-            <div className="text-center my-3">Or login with</div>
-            <div className="social-button">
+            {/* <div className="text-center my-3">Or login with</div> */}
+            {/* <div className="social-button">
               <FacebookLogin
                 appId={process.env.REACT_APP_FB_APP_ID}
                 fields="name,email,picture"
@@ -111,7 +111,7 @@ function Login() {
                 redirectUri={process.env.REACT_APP_GG_REDIRECT || window.location.href}
                 cookiePolicy={'single_host_origin'}
               />
-            </div>
+            </div> */}
           </div>
           <div className="card-wrapper mt-4 p-3">
             <div>No account? <Link to="/signup">Sign up here</Link></div>

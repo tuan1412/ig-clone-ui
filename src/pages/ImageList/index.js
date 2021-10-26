@@ -17,7 +17,6 @@ function ImageList() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  console.log('render image list')
 
   const fetchImages = async (page) => {
     try {
@@ -26,7 +25,7 @@ function ImageList() {
 
       setLoading(true);
 
-      const res = await api.get('/images', { params: { offset, limit } });
+      const res = await api.get('/posts', { params: { offset, limit } });
       if (res && res.success) {
         const { images, total } = res.data;
         setLoading(false);

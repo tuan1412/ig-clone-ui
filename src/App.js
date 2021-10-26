@@ -22,7 +22,6 @@ export const SocketContext = createContext();
 
 function App() {
   const { user, verifying } = useVerifyAuth();
-  console.log('render');
   const socket = useRef();
 
   useEffect(() => {

@@ -36,7 +36,7 @@ const DetailImage = () => {
 
   const fetchDetailImage = async (id) => {
     setLoading(true);
-    const res = await api.get(`/images/${id}`);
+    const res = await api.get(`/posts/${id}`);
     setLoading(false);
     if (res.success) {
       firstRenderCmt.current = true;
