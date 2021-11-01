@@ -59,7 +59,7 @@ function UploadImage() {
       setLoading(true);
       const imageUrl = await uploadFile(picture);
       if (imageUrl) {
-        const resSubmitForm = await api.post('/images', { title, url: imageUrl, description });
+        const resSubmitForm = await api.post('/posts', { title, url: imageUrl, description });
         setLoading(false);
         if (resSubmitForm.success) {
           history.push('/');

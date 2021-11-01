@@ -55,7 +55,7 @@ function App() {
             <PrivateRoute path="/upload">
               <UploadImage />
             </PrivateRoute>
-            <Route path="/images/:id">
+            <Route path="/posts/:id">
               <DetailImage />
             </Route>
           </Switch>

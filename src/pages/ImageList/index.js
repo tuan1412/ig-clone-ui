@@ -50,7 +50,7 @@ function ImageList() {
     return images.map(image => (
       <Col className="mb-4" xs="12" md="3" key={image._id}>
         <Card>
-          <Link to={`/images/${image._id}`}>
+          <Link to={`/posts/${image._id}`}>
             <Card.Img variant="top" src={image.url} />
           </Link>
           <Card.Body>
