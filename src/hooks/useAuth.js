@@ -98,6 +98,7 @@ export const useLogout = () => {
     () => {
       queryClient.setQueryData('user', null);
       history.push('/');
+      localStorage.removeItem('token');
     },
     [queryClient, history],
   );
